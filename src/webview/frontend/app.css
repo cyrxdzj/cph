@@ -121,7 +121,7 @@ a[href]:hover {
 pre,
 textarea {
     background: var(--input-background);
-    font-family: Consolas, 'Ubuntu Mono', monospace;
+    font-family: "Jetbrains Mono", Consolas, 'Ubuntu Mono', monospace;
     width: 100%;
     display: block;
     background: rgba(0, 0, 0, 0.2);
@@ -138,7 +138,7 @@ textarea {
 
 pre,
 code {
-    font-family: Consolas, 'Ubuntu Mono', monospace;
+    font-family: "Jetbrains Mono", Consolas, 'Ubuntu Mono', monospace;
 }
 
 .clearfix {
