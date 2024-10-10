@@ -129,3 +129,10 @@ dist
 releases/
 **/*.vsix
 src/secrets.ts
+
+# self test.cpp
+test.cpp
+test.exe
+test.in
+test.out
+.cph/

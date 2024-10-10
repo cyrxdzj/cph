@@ -31,10 +31,16 @@ export const getProbSaveLocation = (srcPath: string): string => {
 /** Get the problem for a source, `null` if does not exist on the filesystem. */
 export const getProblem = (srcPath: string): Problem | null => {
     const probPath = getProbSaveLocation(srcPath);
-    let problem: string;
+    let problem: Problem;
     try {
-        problem = fs.readFileSync(probPath).toString();
-        return JSON.parse(problem);
+        problem = JSON.parse(fs.readFileSync(probPath).toString());
+        if(problem.input_file_name==undefined){
+            problem.input_file_name="";
+        }
+        if(problem.output_file_name==undefined){
+            problem.output_file_name="";
+        }
+        return problem;
     } catch (err) {
         return null;
     }

@@ -28,6 +28,12 @@ function Judge(props: {
     updateCases: (cases: Case[]) => void;
 }) {
     const problem = props.problem;
+    if(problem.input_file_name==undefined){
+        problem.input_file_name="";
+    }
+    if(problem.output_file_name==undefined){
+        problem.output_file_name="";
+    }
     const cases = props.cases;
     const updateProblem = props.updateProblem;
     const updateCases = props.updateCases;
