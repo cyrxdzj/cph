@@ -212,7 +212,19 @@ const handleNewProblem = async (problem: Problem) => {
         problem.name = splitUrl[splitUrl.length - 1];
     }
     const problemFileName = getProblemFileName(problem, extn);
-    const srcPath = path.join(folder, problemFileName);
+    //const srcPath = path.join(folder,"code", problemFileName);
+    const dialog_res=await(vscode.window.showSaveDialog({
+        saveLabel: "Save",
+        filters: {
+            [extn] : [extn]
+        }
+    }));
+    if(dialog_res==undefined)
+    {
+        return;
+    }
+    const srcPath=dialog_res.fsPath;
+    console.log("srcPath",srcPath);
 
     // Add fields absent in competitive companion.
     problem.srcPath = srcPath;
