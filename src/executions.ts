@@ -20,8 +20,10 @@ export const runTestCase = (
     language: Language,
     binPath: string,
     input: string,
+    input_file_name:string="",
+    output_file_name:string="",
 ): Promise<Run> => {
-    console.log('Running testcase', language, binPath, input);
+    console.log('Running testcase', language, binPath, input,input_file_name,output_file_name);
     const result: Run = {
         stdout: '',
         stderr: '',
@@ -124,11 +126,20 @@ export const runTestCase = (
         });
         process.stderr.on('data', (data) => (result.stderr += data));
 
-        console.log('Wrote to STDIN');
-        try {
-            process.stdin.write(input);
-        } catch (err) {
-            console.error('WRITEERROR', err);
+        if(input_file_name=="")
+        {
+            console.log('Wrote to STDIN');
+            try {
+                process.stdin.write(input);
+            } catch (err) {
+                console.error('WRITEERROR', err);
+            }
+        }
+        else
+        {
+            console.log("Write to "+input_file_name);
+            //const input_file_path=path.join(path.parse(binPath).dir,input_file_name);
+            //console.log("input_file_path",input_file_path);
         }
 
         process.stdin.end();

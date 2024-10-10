@@ -14,7 +14,16 @@ export const runSingleAndSave = async (
     id: number,
     skipCompile = false,
     skipTelemetry = false,
+    input_file_name="",
+    output_file_name="",
 ) => {
+    if(input_file_name.indexOf("/")!=-1)
+    {
+        vscode.window.showErrorMessage(
+            `For security reason, input_file_name shouldn't contain '/'.`,
+        );
+        return;
+    }
     if (!skipTelemetry) {
         globalThis.reporter.sendTelemetryEvent(telmetry.RUN_TESTCASE);
     }
@@ -43,7 +52,7 @@ export const runSingleAndSave = async (
         }
     }
 
-    const run = await runTestCase(language, binPath, testCase.input);
+    const run = await runTestCase(language, binPath, testCase.input,input_file_name,output_file_name);
 
     if (!skipCompile) {
         deleteBinary(language, binPath);

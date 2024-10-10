@@ -11,6 +11,7 @@ import {
     WebViewpersistenceState,
 } from '../../types';
 import CaseView from './CaseView';
+//import JudgeViewProvider from '../JudgeView';
 declare const vscodeApi: {
     postMessage: (message: WebviewToVSEvent) => void;
     getState: () => WebViewpersistenceState | undefined;
@@ -37,6 +38,8 @@ function Judge(props: {
     const [notification, setNotification] = useState<string | null>(null);
     const [waitingForSubmit, setWaitingForSubmit] = useState<boolean>(false);
     const [onlineJudgeEnv, setOnlineJudgeEnv] = useState<boolean>(false);
+    const [inputFileNameState,setInputFileNameState]=useState<string>("");
+    const [outputFileNameState,setOuputFileNameState]=useState<string>("");
     const [webviewState, setWebviewState] = useState<WebViewpersistenceState>(
         () => {
             const vscodeState = vscodeApi.getState();
@@ -145,7 +148,14 @@ function Judge(props: {
 
         problem.tests[idx].input = input;
         problem.tests[idx].output = output;
-
+        
+        //JudgeViewProvider.input_file_name=inputFileNameState.toString();
+        //JudgeViewProvider.output_file_name=outputFileNameState.toString();
+        sendMessageToVSCode({
+            command:'io-file-name',
+            input_file_name:inputFileNameState.toString(),
+            output_file_name:outputFileNameState.toString()
+        });
         sendMessageToVSCode({
             command: 'run-single-and-save',
             problem,
@@ -196,6 +206,13 @@ function Judge(props: {
 
     const runAll = () => {
         refreshOnlineJudge();
+        //JudgeViewProvider.input_file_name=inputFileNameState.toString();
+        //JudgeViewProvider.output_file_name=outputFileNameState.toString();
+        sendMessageToVSCode({
+            command:'io-file-name',
+            input_file_name:inputFileNameState.toString(),
+            output_file_name:outputFileNameState.toString()
+        });
         sendMessageToVSCode({
             command: 'run-all-and-save',
             problem,
@@ -428,6 +445,13 @@ function Judge(props: {
                         </b>
                     )}
                 </h1>
+            </div>
+            <div className="margin-10">
+                <h3>IO Options</h3>
+                <h4>input filename</h4>
+                <input placeholder='Fill blank to use stdin.' value={inputFileNameState} onChange={(e)=>{setInputFileNameState(e.target.value)}}></input>
+                <h4>output filename</h4>
+                <input placeholder='Fill blank to use stdout.' value={outputFileNameState} onChange={(e)=>{setOuputFileNameState(e.target.value)}}></input>
             </div>
             <div className="results">{views}</div>
             <div className="margin-10">

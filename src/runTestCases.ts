@@ -7,6 +7,7 @@ import runAllAndSave from './webview/processRunAll';
 import path from 'path';
 import { getJudgeViewProvider } from './extension';
 import telmetry from './telmetry';
+import JudgeViewProvider from './webview/JudgeView';
 
 /**
  * Execution for the run testcases command. Runs all testcases for the active
@@ -47,7 +48,7 @@ export default async () => {
         command: 'new-problem',
         problem: problem,
     });
-    runAllAndSave(problem);
+    runAllAndSave(problem,JudgeViewProvider.input_file_name,JudgeViewProvider.output_file_name);
     vscode.window.showTextDocument(editor.document, vscode.ViewColumn.One);
 };
 

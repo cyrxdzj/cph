@@ -119,7 +119,8 @@ a[href]:hover {
 
 .pre,
 pre,
-textarea {
+textarea,
+input {
     background: var(--input-background);
     font-family: "Jetbrains Mono", Consolas, 'Ubuntu Mono', monospace;
     width: 100%;
@@ -153,7 +154,9 @@ code {
 }
 
 textarea:focus,
-textarea:active {
+textarea:active,
+input:focus,
+input:active {
     background: black;
     outline: none !important;
     border: 1px solid #3393cc;
@@ -292,6 +295,7 @@ body.vscode-light * {
 }
 
 body.vscode-light textarea,
+body.vscode-light input,
 pre {
     background: rgba(255, 255, 255, 0.5);
     outline: none !important;
@@ -305,7 +309,8 @@ body.vscode-light .case {
     margin-bottom: 4px;
 }
 
-body.vscode-light textarea:focus {
+body.vscode-light textarea:focus,
+body.vscode-light input:focus {
     background: white;
     outline: none !important;
     border: 1px solid rgb(28, 145, 184);

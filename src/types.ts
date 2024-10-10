@@ -150,6 +150,12 @@ export type OpenUrl = {
     url: string;
 };
 
+export type IOFileName = {
+    command: 'io-file-name';
+    input_file_name:string;
+    output_file_name:string;
+}
+
 export type WebviewToVSEvent =
     | RunAllCommand
     | GetInitialProblem
@@ -161,7 +167,8 @@ export type WebviewToVSEvent =
     | SubmitCf
     | OnlineJudgeEnv
     | SubmitKattis
-    | OpenUrl;
+    | OpenUrl
+    | IOFileName;
 
 export type RunningCommand = {
     command: 'running';

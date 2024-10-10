@@ -15,6 +15,8 @@ import { setOnlineJudgeEnv } from '../compiler';
 
 class JudgeViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'cph.judgeView';
+    public static input_file_name="";
+    public static output_file_name="";
 
     private _view?: vscode.WebviewView;
 
@@ -41,16 +43,22 @@ class JudgeViewProvider implements vscode.WebviewViewProvider {
             async (message: WebviewToVSEvent) => {
                 console.log('Got from webview', message);
                 switch (message.command) {
+                    case 'io-file-name': {
+                        console.log("IOFileName message received.",message);
+                        JudgeViewProvider.input_file_name=message.input_file_name;
+                        JudgeViewProvider.output_file_name=message.output_file_name;
+                        break;
+                    }
                     case 'run-single-and-save': {
                         const problem = message.problem;
                         const id = message.id;
-                        runSingleAndSave(problem, id);
+                        runSingleAndSave(problem, id,false,false,JudgeViewProvider.input_file_name,JudgeViewProvider.output_file_name);
                         break;
                     }
 
                     case 'run-all-and-save': {
                         const problem = message.problem;
-                        runAllAndSave(problem);
+                        runAllAndSave(problem,JudgeViewProvider.input_file_name,JudgeViewProvider.output_file_name);
                         break;
                     }
 
