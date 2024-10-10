@@ -7,7 +7,8 @@ import * as vscode from 'vscode';
 import path from 'path';
 import { onlineJudgeEnv } from './compiler';
 import telmetry from './telmetry';
-
+import * as fs from "fs";
+import { cwd } from 'process';
 const runningBinaries: ChildProcessWithoutNullStreams[] = [];
 
 /**
@@ -32,6 +33,8 @@ export const runTestCase = (
         time: 0,
         timeOut: false,
     };
+        
+    const binDir = path.dirname(binPath);
     const spawnOpts = {
         timeout: config.timeout,
         env: {
@@ -39,6 +42,7 @@ export const runTestCase = (
             DEBUG: 'true',
             CPH: 'true',
         },
+        cwd:binDir
     };
 
     let process: ChildProcessWithoutNullStreams;
@@ -92,10 +96,11 @@ export const runTestCase = (
             const binFileName = path.parse(binPath).name.slice(0, -1);
             args.push(binFileName);
 
-            process = spawn('java', args);
+            process = spawn('java', args,{cwd:binDir});
             break;
         }
         default: {
+            const binDir = path.dirname(binPath);
             process = spawn(binPath, spawnOpts);
         }
     }
@@ -138,8 +143,15 @@ export const runTestCase = (
         else
         {
             console.log("Write to "+input_file_name);
-            //const input_file_path=path.join(path.parse(binPath).dir,input_file_name);
-            //console.log("input_file_path",input_file_path);
+            const input_file_path=path.join(path.parse(binPath).dir,input_file_name);
+            console.log("binPath",binPath);
+            console.log("input_file_path",input_file_path);
+            fs.writeFile(input_file_path,input,(err)=>{
+                if(err) {
+                    vscode.window.showErrorMessage("An error occurred when write input content to "+input_file_path+"\n"+err.stack);
+                    console.error('WRITEERROR', err);
+                }
+            })
         }
 
         process.stdin.end();
