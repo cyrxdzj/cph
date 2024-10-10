@@ -123,7 +123,22 @@ export const runTestCase = (
             result.time = end - begin;
             runningBinaries.pop();
             console.log('Run Result:', result);
-            resolve(result);
+            if(output_file_name!="")
+            {
+                const output_file_path=path.join(path.parse(binPath).dir,output_file_name);
+                fs.readFile(output_file_path,(err,data)=>{
+                    if(err) {
+                        vscode.window.showErrorMessage("An error occurred when read output content to "+output_file_path+"\n"+err.stack);
+                        console.error('WRITEERROR', err);
+                    }
+                    result.stdout=data.toString();
+                    resolve(result);
+                })
+            }
+            else
+            {
+                resolve(result);
+            }
         });
 
         process.stdout.on('data', (data) => {

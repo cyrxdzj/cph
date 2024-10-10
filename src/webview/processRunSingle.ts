@@ -23,6 +23,13 @@ export const runSingleAndSave = async (
         );
         return;
     }
+    if(output_file_name.indexOf("/")!=-1)
+    {
+        vscode.window.showErrorMessage(
+            `For security reason, output_file_name shouldn't contain '/'.`,
+        );
+        return;
+    }
     if (!skipTelemetry) {
         globalThis.reporter.sendTelemetryEvent(telmetry.RUN_TESTCASE);
     }
