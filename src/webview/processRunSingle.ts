@@ -14,9 +14,8 @@ export const runSingleAndSave = async (
     id: number,
     skipCompile = false,
     skipTelemetry = false,
-    input_file_name="",
-    output_file_name="",
 ) => {
+    const input_file_name=problem.input_file_name,output_file_name=problem.output_file_name;
     if(input_file_name.indexOf("/")!=-1)
     {
         vscode.window.showErrorMessage(

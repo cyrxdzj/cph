@@ -38,8 +38,8 @@ function Judge(props: {
     const [notification, setNotification] = useState<string | null>(null);
     const [waitingForSubmit, setWaitingForSubmit] = useState<boolean>(false);
     const [onlineJudgeEnv, setOnlineJudgeEnv] = useState<boolean>(false);
-    const [inputFileNameState,setInputFileNameState]=useState<string>("");
-    const [outputFileNameState,setOuputFileNameState]=useState<string>("");
+    const [inputFileNameState,setInputFileNameState]=useState<string>(problem.input_file_name);
+    const [outputFileNameState,setOuputFileNameState]=useState<string>(problem.output_file_name);
     const [webviewState, setWebviewState] = useState<WebViewpersistenceState>(
         () => {
             const vscodeState = vscodeApi.getState();
@@ -148,14 +148,16 @@ function Judge(props: {
 
         problem.tests[idx].input = input;
         problem.tests[idx].output = output;
+        problem.input_file_name=inputFileNameState.toString();
+        problem.output_file_name=outputFileNameState.toString();
         
         //JudgeViewProvider.input_file_name=inputFileNameState.toString();
         //JudgeViewProvider.output_file_name=outputFileNameState.toString();
-        sendMessageToVSCode({
+        /*sendMessageToVSCode({
             command:'io-file-name',
             input_file_name:inputFileNameState.toString(),
             output_file_name:outputFileNameState.toString()
-        });
+        });*/
         sendMessageToVSCode({
             command: 'run-single-and-save',
             problem,
@@ -208,11 +210,13 @@ function Judge(props: {
         refreshOnlineJudge();
         //JudgeViewProvider.input_file_name=inputFileNameState.toString();
         //JudgeViewProvider.output_file_name=outputFileNameState.toString();
-        sendMessageToVSCode({
+        problem.input_file_name=inputFileNameState.toString();
+        problem.output_file_name=outputFileNameState.toString();
+        /*sendMessageToVSCode({
             command:'io-file-name',
             input_file_name:inputFileNameState.toString(),
             output_file_name:outputFileNameState.toString()
-        });
+        });*/
         sendMessageToVSCode({
             command: 'run-all-and-save',
             problem,

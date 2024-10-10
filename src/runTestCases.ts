@@ -48,7 +48,7 @@ export default async () => {
         command: 'new-problem',
         problem: problem,
     });
-    runAllAndSave(problem,JudgeViewProvider.input_file_name,JudgeViewProvider.output_file_name);
+    runAllAndSave(problem);
     vscode.window.showTextDocument(editor.document, vscode.ViewColumn.One);
 };
 
@@ -76,6 +76,8 @@ const createLocalProblem = async (editor: vscode.TextEditor) => {
         srcPath,
         group: 'local',
         local: true,
+        input_file_name:"",
+        output_file_name:""
     };
     console.log(newProblem);
     saveProblem(srcPath, newProblem);

@@ -77,6 +77,8 @@ export type Problem = {
     tests: TestCase[];
     srcPath: string;
     local?: boolean;
+    input_file_name:string;
+    output_file_name:string;
 };
 
 export type Case = {
