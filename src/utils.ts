@@ -205,3 +205,21 @@ export const getProblemForDocument = (
     console.log("getProblemForDocument",problem);
     return problem;
 };
+
+export const getInputOriginFilenameFromInput =(
+    input: string,
+): string=>{
+    let input_origin_file_name="";
+    if(input.length>=3)
+    {
+        if(input[0]=='$'&&input.endsWith('$'))
+        {
+            input_origin_file_name=input.slice(1,input.length-1);
+        }
+    }
+    /*if(input_origin_file_name!="")
+    {
+        console.log("input_origin_file_name",input_origin_file_name);
+    }*/
+    return input_origin_file_name;
+}

@@ -8,7 +8,7 @@ import path from 'path';
 import { onlineJudgeEnv } from './compiler';
 import telmetry from './telmetry';
 import * as fs from "fs";
-import { cwd } from 'process';
+import { getInputOriginFilenameFromInput } from './utils';
 const runningBinaries: ChildProcessWithoutNullStreams[] = [];
 
 /**
@@ -44,6 +44,12 @@ export const runTestCase = (
         },
         cwd:binDir
     };
+
+    const input_origin_file_name=getInputOriginFilenameFromInput(input);
+    if(input_origin_file_name!="")
+    {
+        console.log("input_origin_file_name",input_origin_file_name);
+    }
 
     let process: ChildProcessWithoutNullStreams;
 
@@ -129,7 +135,7 @@ export const runTestCase = (
                 fs.readFile(output_file_path,(err,data)=>{
                     if(err) {
                         vscode.window.showErrorMessage("An error occurred when read output content to "+output_file_path+"\n"+err.stack);
-                        console.error('WRITEERROR', err);
+                        console.error('ERR', err);
                     }
                     result.stdout=data.toString();
                     resolve(result);
@@ -149,24 +155,54 @@ export const runTestCase = (
         if(input_file_name=="")
         {
             console.log('Wrote to STDIN');
-            try {
-                process.stdin.write(input);
-            } catch (err) {
-                console.error('WRITEERROR', err);
+            if(input_origin_file_name=="")
+            {
+                try {
+                    process.stdin.write(input);
+                } catch (err) {
+                    console.error('WRITEERROR', err);
+                }
+            }
+            else
+            {
+                const input_origin_file_path=path.join(path.parse(binPath).dir,input_origin_file_name);
+                fs.readFile(input_origin_file_path,(err,data)=>{
+                    if(err) {
+                        vscode.window.showErrorMessage("An error occurred when read input from "+input_origin_file_name+"\n"+err.stack);
+                        console.error('ERR', err);
+                    }
+                    try {
+                        process.stdin.write(data);
+                    } catch (err) {
+                        console.error('WRITEERROR', err);
+                    }
+                });
             }
         }
         else
         {
             console.log("Write to "+input_file_name);
             const input_file_path=path.join(path.parse(binPath).dir,input_file_name);
-            console.log("binPath",binPath);
+            const input_origin_file_path=path.join(path.parse(binPath).dir,input_origin_file_name);
             console.log("input_file_path",input_file_path);
-            fs.writeFile(input_file_path,input,(err)=>{
-                if(err) {
-                    vscode.window.showErrorMessage("An error occurred when write input content to "+input_file_path+"\n"+err.stack);
-                    console.error('WRITEERROR', err);
-                }
-            })
+            if(input_origin_file_name=="")
+            {
+                fs.writeFile(input_file_path,input,(err)=>{
+                    if(err) {
+                        vscode.window.showErrorMessage("An error occurred when write input content to "+input_file_path+"\n"+err.stack);
+                        console.error('WRITEERROR', err);
+                    }
+                })
+            }
+            else
+            {
+                fs.copyFile(input_origin_file_path,input_file_path,(err)=>{
+                    if(err) {
+                        vscode.window.showErrorMessage("An error occurred when copy input content from "+input_origin_file_path+" to "+input_file_path+"\n"+err.stack);
+                        console.error('WRITEERROR', err);
+                    }
+                });
+            }
         }
 
         process.stdin.end();
