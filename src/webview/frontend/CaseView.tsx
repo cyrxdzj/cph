@@ -2,6 +2,8 @@ import { Case, VSToWebViewMessage } from '../../types';
 import { useState, createRef, useEffect } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 import React from 'react';
+import { Button } from 'antd';
+import { color } from './color';
 
 export default function CaseView(props: {
     num: number;
@@ -155,8 +157,8 @@ export default function CaseView(props: {
                     )}
                 </div>
                 <div className="time">
-                    <button
-                        className="btn btn-green"
+                    <Button type="primary"
+                        style={{"background":color.green_main}}
                         title="Run Again"
                         onClick={rerun}
                         disabled={running}
@@ -164,9 +166,9 @@ export default function CaseView(props: {
                         <span className="icon">
                             <i className="codicon codicon-play"></i>
                         </span>{' '}
-                    </button>
-                    <button
-                        className="btn btn-red"
+                    </Button>
+                    <Button type="primary"
+                        style={{"background":color.red_main}}
                         title="Delete Testcase"
                         onClick={() => {
                             props.remove(id);
@@ -175,7 +177,7 @@ export default function CaseView(props: {
                         <span className="icon">
                             <i className="codicon codicon-trash"></i>
                         </span>{' '}
-                    </button>
+                    </Button>
                 </div>
             </div>
             {!minimized && (

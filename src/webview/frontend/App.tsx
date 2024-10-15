@@ -11,7 +11,8 @@ import {
     WebViewpersistenceState,
 } from '../../types';
 import CaseView from './CaseView';
-//import JudgeViewProvider from '../JudgeView';
+import { Button } from 'antd';
+import { color } from './color';
 declare const vscodeApi: {
     postMessage: (message: WebviewToVSEvent) => void;
     getState: () => WebViewpersistenceState | undefined;
@@ -356,22 +357,22 @@ function Judge(props: {
 
         if (url.hostname == 'codeforces.com') {
             return (
-                <button className="btn" onClick={submitCf}>
+                <Button type="primary" style={{"background":color.blue_main}} onClick={submitCf}>
                     <span className="icon">
                         <i className="codicon codicon-cloud-upload"></i>
                     </span>{' '}
                     Submit
-                </button>
+                </Button>
             );
         } else if (url.hostname == 'open.kattis.com') {
             return (
                 <div className="pad-10 submit-area">
-                    <button className="btn" onClick={submitKattis}>
+                    <Button type="primary" style={{"background":color.blue_main}} onClick={submitKattis}>
                         <span className="icon">
                             <i className="codicon codicon-cloud-upload"></i>
                         </span>{' '}
                         Submit on Kattis
-                    </button>
+                    </Button>
                     {waitingForSubmit && (
                         <>
                             <span className="loader"></span> Submitting...
@@ -466,8 +467,8 @@ function Judge(props: {
             <div className="results">{views}</div>
             <div className="margin-10">
                 <div className="row">
-                    <button
-                        className="btn btn-green"
+                    <Button type="primary"
+                        style={{"background":color.green_main}}
                         onClick={newCase}
                         title="Create a new empty testcase"
                     >
@@ -475,7 +476,7 @@ function Judge(props: {
                             <i className="codicon codicon-add"></i>
                         </span>{' '}
                         New Testcase
-                    </button>
+                    </Button>
                     {renderSubmitButton()}
                 </div>
 
@@ -520,8 +521,8 @@ function Judge(props: {
             </div>
             <div className="actions">
                 <div className="row">
-                    <button
-                        className="btn"
+                    <Button type="primary"
+                        style={{"background":color.blue_main}}
                         onClick={runAll}
                         title="Run all testcases again"
                     >
@@ -529,9 +530,9 @@ function Judge(props: {
                             <i className="codicon codicon-run-above"></i>
                         </span>{' '}
                         <span className="action-text">Run All</span>
-                    </button>
-                    <button
-                        className="btn btn-green"
+                    </Button>
+                    <Button type="primary"
+                        style={{"background":color.green_main}} 
                         onClick={newCase}
                         title="Create a new empty testcase"
                     >
@@ -539,11 +540,11 @@ function Judge(props: {
                             <i className="codicon codicon-add"></i>
                         </span>{' '}
                         <span className="action-text">New</span>
-                    </button>
+                    </Button>
                 </div>
                 <div className="row">
-                    <button
-                        className="btn btn-orange"
+                    <Button type="primary"
+                        style={{"background":color.orange_main}}
                         onClick={stop}
                         title="Kill all running testcases"
                     >
@@ -551,9 +552,9 @@ function Judge(props: {
                             <i className="codicon codicon-circle-slash"></i>
                         </span>{' '}
                         <span className="action-text">Stop</span>
-                    </button>
-                    <button
-                        className="btn"
+                    </Button>
+                    <Button type="primary"
+                        style={{"background":color.blue_main}}
                         title="Help"
                         onClick={() =>
                             sendMessageToVSCode({
@@ -566,9 +567,9 @@ function Judge(props: {
                             <i className="codicon codicon-question"></i>
                         </span>{' '}
                         <span className="action-text">Help</span>
-                    </button>
-                    <button
-                        className="btn btn-red right"
+                    </Button>
+                    <Button type="primary"
+                        style={{"background":color.red_main}}
                         onClick={deleteTcs}
                         title="Delete all testcases and close results window"
                     >
@@ -576,7 +577,7 @@ function Judge(props: {
                             <i className="codicon codicon-trash"></i>
                         </span>{' '}
                         <span className="action-text">Delete</span>
-                    </button>
+                    </Button>
                 </div>
             </div>
 
