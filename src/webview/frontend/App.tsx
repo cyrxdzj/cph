@@ -457,11 +457,11 @@ function Judge(props: {
                 </h1>
             </div>
             <div className="margin-10">
-                <h3>IO Options</h3>
-                <h4>input filename</h4>
-                <input placeholder='Fill blank to use stdin.' value={inputFileNameState} onChange={(e)=>{setInputFileNameState(e.target.value)}}></input>
-                <h4>output filename</h4>
-                <input placeholder='Fill blank to use stdout.' value={outputFileNameState} onChange={(e)=>{setOuputFileNameState(e.target.value)}}></input>
+                <span>input filename</span>
+                <input placeholder='stdin' value={inputFileNameState} onChange={(e)=>{setInputFileNameState(e.target.value)}}></input>
+                <br></br>
+                <span>output filename</span>
+                <input placeholder='stdout' value={outputFileNameState} onChange={(e)=>{setOuputFileNameState(e.target.value)}}></input>
             </div>
             <div className="results">{views}</div>
             <div className="margin-10">
@@ -479,7 +479,7 @@ function Judge(props: {
                     {renderSubmitButton()}
                 </div>
 
-                <br />
+                {/*<br />
                 <span onClick={toggleOnlineJudgeEnv}>
                     <input
                         type="checkbox"
@@ -509,7 +509,7 @@ function Judge(props: {
                             Feedback
                         </a>
                     </small>
-                </div>
+                </div>*/}
                 <div className="remote-message">
                     <p
                         dangerouslySetInnerHTML={{
