@@ -21,10 +21,10 @@ export const runTestCase = (
     language: Language,
     binPath: string,
     input: string,
-    input_file_name:string="",
-    output_file_name:string="",
+    input_file_name: string = "",
+    output_file_name: string = "",
 ): Promise<Run> => {
-    globalThis.logger.log('Running testcase', language, binPath, input,input_file_name,output_file_name);
+    globalThis.logger.log('Running testcase', language, binPath, input, input_file_name, output_file_name);
     const result: Run = {
         stdout: '',
         stderr: '',
@@ -33,7 +33,7 @@ export const runTestCase = (
         time: 0,
         timeOut: false,
     };
-        
+
     const binDir = path.dirname(binPath);
     const spawnOpts = {
         timeout: config.timeout,
@@ -42,13 +42,12 @@ export const runTestCase = (
             DEBUG: 'true',
             CPH: 'true',
         },
-        cwd:binDir
+        cwd: binDir
     };
 
-    const input_origin_file_name=getInputOriginFilenameFromInput(input);
-    if(input_origin_file_name!="")
-    {
-        console.log("input_origin_file_name",input_origin_file_name);
+    const input_origin_file_name = getInputOriginFilenameFromInput(input);
+    if (input_origin_file_name != "") {
+        globalThis.logger.log("input_origin_file_name", input_origin_file_name);
     }
 
     let process: ChildProcessWithoutNullStreams;
@@ -102,7 +101,7 @@ export const runTestCase = (
             const binFileName = path.parse(binPath).name.slice(0, -1);
             args.push(binFileName);
 
-            process = spawn('java', args,{cwd:binDir});
+            process = spawn('java', args, { cwd: binDir });
             break;
         }
         case 'csharp': {
@@ -150,20 +149,18 @@ export const runTestCase = (
             result.time = end - begin;
             runningBinaries.pop();
             globalThis.logger.log('Run Result:', result);
-            if(output_file_name!="")
-            {
-                const output_file_path=path.join(path.parse(binPath).dir,output_file_name);
-                fs.readFile(output_file_path,(err,data)=>{
-                    if(err) {
-                        vscode.window.showErrorMessage("An error occurred when read output content to "+output_file_path+"\n"+err.stack);
+            if (output_file_name != "") {
+                const output_file_path = path.join(path.parse(binPath).dir, output_file_name);
+                fs.readFile(output_file_path, (err, data) => {
+                    if (err) {
+                        vscode.window.showErrorMessage("An error occurred when read output content to " + output_file_path + "\n" + err.stack);
                         console.error('ERR', err);
                     }
-                    result.stdout=data.toString();
+                    result.stdout = data.toString();
                     resolve(result);
                 })
             }
-            else
-            {
+            else {
                 resolve(result);
             }
         });
@@ -173,23 +170,20 @@ export const runTestCase = (
         });
         process.stderr.on('data', (data) => (result.stderr += data));
 
-        if(input_file_name=="")
-        {
-            console.log('Wrote to STDIN');
-            if(input_origin_file_name=="")
-            {
+        if (input_file_name == "") {
+            globalThis.logger.log('Wrote to STDIN');
+            if (input_origin_file_name == "") {
                 try {
                     process.stdin.write(input);
                 } catch (err) {
                     console.error('WRITEERROR', err);
                 }
             }
-            else
-            {
-                const input_origin_file_path=path.join(path.parse(binPath).dir,input_origin_file_name);
-                fs.readFile(input_origin_file_path,(err,data)=>{
-                    if(err) {
-                        vscode.window.showErrorMessage("An error occurred when read input from "+input_origin_file_name+"\n"+err.stack);
+            else {
+                const input_origin_file_path = path.join(path.parse(binPath).dir, input_origin_file_name);
+                fs.readFile(input_origin_file_path, (err, data) => {
+                    if (err) {
+                        vscode.window.showErrorMessage("An error occurred when read input from " + input_origin_file_name + "\n" + err.stack);
                         console.error('ERR', err);
                     }
                     try {
@@ -200,26 +194,23 @@ export const runTestCase = (
                 });
             }
         }
-        else
-        {
-            console.log("Write to "+input_file_name);
-            const input_file_path=path.join(path.parse(binPath).dir,input_file_name);
-            const input_origin_file_path=path.join(path.parse(binPath).dir,input_origin_file_name);
-            console.log("input_file_path",input_file_path);
-            if(input_origin_file_name=="")
-            {
-                fs.writeFile(input_file_path,input,(err)=>{
-                    if(err) {
-                        vscode.window.showErrorMessage("An error occurred when write input content to "+input_file_path+"\n"+err.stack);
+        else {
+            globalThis.logger.log("Write to " + input_file_name);
+            const input_file_path = path.join(path.parse(binPath).dir, input_file_name);
+            const input_origin_file_path = path.join(path.parse(binPath).dir, input_origin_file_name);
+            globalThis.logger.log("input_file_path", input_file_path);
+            if (input_origin_file_name == "") {
+                fs.writeFile(input_file_path, input, (err) => {
+                    if (err) {
+                        vscode.window.showErrorMessage("An error occurred when write input content to " + input_file_path + "\n" + err.stack);
                         console.error('WRITEERROR', err);
                     }
                 })
             }
-            else
-            {
-                fs.copyFile(input_origin_file_path,input_file_path,(err)=>{
-                    if(err) {
-                        vscode.window.showErrorMessage("An error occurred when copy input content from "+input_origin_file_path+" to "+input_file_path+"\n"+err.stack);
+            else {
+                fs.copyFile(input_origin_file_path, input_file_path, (err) => {
+                    if (err) {
+                        vscode.window.showErrorMessage("An error occurred when copy input content from " + input_origin_file_path + " to " + input_file_path + "\n" + err.stack);
                         console.error('WRITEERROR', err);
                     }
                 });

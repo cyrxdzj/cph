@@ -219,18 +219,17 @@ const handleNewProblem = async (problem: Problem) => {
     }
     const problemFileName = getProblemFileName(problem, extn);
     //const srcPath = path.join(folder,"code", problemFileName);
-    const dialog_res=await(vscode.window.showSaveDialog({
+    const dialog_res = await (vscode.window.showSaveDialog({
         saveLabel: "Save",
         filters: {
-            [extn] : [extn]
+            [extn]: [extn]
         }
     }));
-    if(dialog_res==undefined)
-    {
+    if (dialog_res == undefined) {
         return;
     }
-    const srcPath=dialog_res.fsPath;
-    console.log("srcPath",srcPath);
+    const srcPath = dialog_res.fsPath;
+    globalThis.logger.log("srcPath", srcPath);
 
     // Add fields absent in competitive companion.
     problem.srcPath = srcPath;

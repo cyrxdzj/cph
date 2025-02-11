@@ -17,16 +17,14 @@ export const runSingleAndSave = async (
     skipCompile = false,
     skipTelemetry = false,
 ) => {
-    const input_file_name=problem.input_file_name,output_file_name=problem.output_file_name;
-    if(input_file_name.indexOf("/")!=-1)
-    {
+    const input_file_name = problem.input_file_name, output_file_name = problem.output_file_name;
+    if (input_file_name.indexOf("/") != -1) {
         vscode.window.showErrorMessage(
             `For security reason, input_file_name shouldn't contain '/'.`,
         );
         return;
     }
-    if(output_file_name.indexOf("/")!=-1)
-    {
+    if (output_file_name.indexOf("/") != -1) {
         vscode.window.showErrorMessage(
             `For security reason, output_file_name shouldn't contain '/'.`,
         );
@@ -60,53 +58,45 @@ export const runSingleAndSave = async (
         }
     }
 
-    const input_origin_file_name=getInputOriginFilenameFromInput(testCase.input);
-    const answer_origin_file_name=getInputOriginFilenameFromInput(testCase.output);
-    if(input_origin_file_name.indexOf("/")!=-1)
-    {
+    const input_origin_file_name = getInputOriginFilenameFromInput(testCase.input);
+    const answer_origin_file_name = getInputOriginFilenameFromInput(testCase.output);
+    if (input_origin_file_name.indexOf("/") != -1) {
         vscode.window.showErrorMessage(
             `For security reason, input_origin_file_name shouldn't contain '/'.`,
         );
         return;
     }
-    if(answer_origin_file_name.indexOf("/")!=-1)
-    {
+    if (answer_origin_file_name.indexOf("/") != -1) {
         vscode.window.showErrorMessage(
             `For security reason, answer_origin_file_name shouldn't contain '/'.`,
         );
         return;
     }
-    if(input_origin_file_name!="")
-    {
-        const input_origin_file_path=path.join(path.parse(binPath).dir,input_origin_file_name);
-        await readFile(input_origin_file_path,(err,data)=>{
-            if(!err)
-            {
-                testCase.input=data.toString();
+    if (input_origin_file_name != "") {
+        const input_origin_file_path = path.join(path.parse(binPath).dir, input_origin_file_name);
+        await readFile(input_origin_file_path, (err, data) => {
+            if (!err) {
+                testCase.input = data.toString();
             }
-            else
-            {
-                vscode.window.showErrorMessage("An error occurred when read input from "+input_origin_file_name+"\n"+err.stack);
+            else {
+                vscode.window.showErrorMessage("An error occurred when read input from " + input_origin_file_name + "\n" + err.stack);
                 console.error('ERR', err);
             }
         });
     }
-    if(answer_origin_file_name!="")
-    {
-        const answer_origin_file_path=path.join(path.parse(binPath).dir,answer_origin_file_name);
-        await readFile(answer_origin_file_path,(err,data)=>{
-            if(!err)
-            {
-                testCase.output=data.toString();
+    if (answer_origin_file_name != "") {
+        const answer_origin_file_path = path.join(path.parse(binPath).dir, answer_origin_file_name);
+        await readFile(answer_origin_file_path, (err, data) => {
+            if (!err) {
+                testCase.output = data.toString();
             }
-            else
-            {
-                console.log("An error occurred when read answer content from "+answer_origin_file_path+"\n"+err.stack);
+            else {
+                globalThis.logger.log("An error occurred when read answer content from " + answer_origin_file_path + "\n" + err.stack);
             }
         });
     }
 
-    const run = await runTestCase(language, binPath, testCase.input,input_file_name,output_file_name);
+    const run = await runTestCase(language, binPath, testCase.input, input_file_name, output_file_name);
 
     if (!skipCompile) {
         deleteBinary(language, binPath);
