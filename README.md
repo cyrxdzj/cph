@@ -49,6 +49,7 @@ enter testcases.
 
 -   C++
 -   C
+-   C#
 -   Rust
 -   Go
 -   Haskell
@@ -70,13 +71,12 @@ approach. It makes reviewing and accepting the PR much easier.**
 
 ## Telemetry
 
-The extension collects basic events defined in `src/telmetry.ts`. To disable,
-modify the setting `telemetry.telemetryLevel` (applies to all VSCode
-extensions).
+To show live user count, the extension sends a request to the server every few
+seconds. No information is sent with the request.
 
 ## License
 
-Copyright (C) 2023 Divyanshu Agrawal
+Copyright (C) 2019 - Present Divyanshu Agrawal
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software

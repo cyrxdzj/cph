@@ -5,7 +5,7 @@
     "license": "GPL-3.0-or-later",
     "icon": "icon.png",
     "publisher": "DivyanshuAgrawal",
-    "version": "2024.6.1717519178",
+    "version": "2077.0.0",
     "engines": {
         "vscode": "^1.52.0"
     },
@@ -101,7 +101,16 @@
                 "cph.language.c.Command": {
                     "type": "string",
                     "default": "gcc",
-                    "description": "Command used to compile .c files. Example 'gcc', 'gcc-10', 'clang', etc."
+                    "description": "Command used to compile .c files. Example 'gcc', 'gcc-10', 'clang', 'msvc', etc."
+                },
+                "cph.language.c.OutputArg": {
+                    "type": "string",
+                    "default": "-o",
+                    "enum": [
+                        "-o",
+                        "/Fe:"
+                    ],
+                    "description": "C compiler's argument that specifies the output files."
                 },
                 "cph.language.cpp.Args": {
                     "title": "Compilation flags for .cpp files",
@@ -112,13 +121,14 @@
                 "cph.language.cpp.SubmissionCompiler": {
                     "type": "string",
                     "title": "check12344566",
-                    "default": "GNU G++17 7.3.0",
+                    "default": "GNU G++23 14.2 (64 bit, msys2)",
                     "enum": [
                         "GNU G++17 7.3.0",
                         "GNU G++14 6.4.0",
                         "GNU G++11 5.1.0",
                         "GNU G++17 9.2.0 (64 bit, msys 2)",
                         "GNU G++20 13.2 (64 bit, winlibs)",
+                        "GNU G++23 14.2 (64 bit, msys2)",
                         "Microsoft Visual C++ 2017",
                         "Microsoft Visual C++ 2010",
                         "Clang++17 Diagnostics"
@@ -130,6 +140,36 @@
                     "default": "g++",
                     "description": "Command used to compile .cpp files. Example 'g++', 'g++-10', 'clang++', etc."
                 },
+                "cph.language.cpp.OutputArg": {
+                    "type": "string",
+                    "default": "-o",
+                    "enum": [
+                        "-o",
+                        "/Fe:"
+                    ],
+                    "description": "C++ compiler's argument that specifies the output files."
+                },
+                "cph.language.csharp.Args": {
+                    "title": "Compilation flags for .cs files",
+                    "type": "string",
+                    "default": "",
+                    "description": "Space seperated additional flags passed to dotnet while compiling your file."
+                },
+                "cph.language.csharp.SubmissionCompiler": {
+                    "type": "string",
+                    "default": "C# 8, .NET Core 3.1",
+                    "enum": [
+                        "C# 8, .NET Core 3.1",
+                        "C# 10, .NET SDK 6.0",
+                        "C# Mono 6.8"
+                    ],
+                    "description": "The compiler chosen in the drop down during Codeforces submission for C#"
+                },
+                "cph.language.csharp.Command": {
+                    "type": "string",
+                    "default": "dotnet",
+                    "description": "Command used to compile .cs files. 'dotnet' for C# .NET, 'mcs' for C# Mono"
+                },
                 "cph.language.python.Args": {
                     "title": "Compilation flags for Python",
                     "type": "string",
@@ -138,12 +178,12 @@
                 },
                 "cph.language.python.SubmissionCompiler": {
                     "type": "string",
-                    "default": "PyPy 3.9.10 (7.3.9, 64bit)",
+                    "default": "PyPy 3.10 (7.3.15, 64bit)",
                     "enum": [
-                        "PyPy 3.6 (7.2.0)",
-                        "PyPy 3.9.10 (7.3.9, 64bit)",
-                        "Python 3.7.2",
                         "PyPy 2.7 (7.2.0)",
+                        "PyPy 3.6 (7.2.0)",
+                        "PyPy 3.10 (7.3.15, 64bit)",
+                        "Python 3.7.2",
                         "Python 2.7.15"
                     ],
                     "description": "The compiler chosen in the drop down during Codeforces submission for python"
@@ -286,13 +326,14 @@
                         "rust",
                         "js",
                         "java",
-                        "ruby"
+                        "ruby",
+                        "csharp"
                     ],
                     "description": "The default language for problems imported via Competitive Companion (None will give option to select language on importing problem every time)"
                 },
                 "cph.general.menuChoices": {
                     "type": "string",
-                    "default": "cpp java js python c rust ruby",
+                    "default": "cpp java js python c rust ruby csharp",
                     "description": "Space separated languages, in top to bottom order, shown in menu when a problem is imported via Competitive Companion. Example 'java python' would show java on top, followed by python."
                 },
                 "cph.general.useShortCodeForcesName": {
@@ -308,12 +349,22 @@
                 "cph.general.defaultLanguageTemplateFileLocation": {
                     "type": "string",
                     "default": "",
-                    "description": "The path of the template that will be loaded when a new file of the default language is created by Competitive Companion"
+                    "description": "The path to the template file that will be used when creating a new file for the default language via Competitive Companion. For Java templates, use 'CLASS_NAME' as a placeholder for the class name like 'class CLASS_NAME{...}'"
                 },
                 "cph.general.autoShowJudge": {
                     "type": "boolean",
                     "default": true,
                     "description": "Automatically show the judge view when opening a file that has a problem associated with it"
+                },
+                "cph.general.remoteServerAddress": {
+                    "type": "string",
+                    "default": "http://20.244.105.138:4546",
+                    "description": "The address of the remote server to which the extension will send requests. (Currently used for live user count)"
+                },
+                "cph.general.showLiveUserCount": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether to display the live user count. Turning it on may slightly reduce performance."
                 }
             }
         }

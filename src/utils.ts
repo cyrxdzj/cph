@@ -16,6 +16,7 @@ import {
     getJsArgsPref,
     getGoArgsPref,
     getHaskellArgsPref,
+    getCSharpArgsPref,
     getCCommand,
     getCppCommand,
     getPythonCommand,
@@ -25,6 +26,7 @@ import {
     getJsCommand,
     getGoCommand,
     getHaskellCommand,
+    getCSharpCommand,
 } from './preferences';
 import { Language, Problem } from './types';
 import telmetry from './telmetry';
@@ -120,6 +122,14 @@ export const getLanguage = (srcPath: string): Language => {
                 skipCompile: false,
             };
         }
+        case 'csharp': {
+            return {
+                name: langName,
+                args: [...getCSharpArgsPref()],
+                compiler: getCSharpCommand(),
+                skipCompile: false,
+            };
+        }
     }
     throw new Error('Invalid State');
 };
@@ -172,14 +182,15 @@ export const checkUnsupported = (srcPath: string): boolean => {
 export const deleteProblemFile = (srcPath: string) => {
     globalThis.reporter.sendTelemetryEvent(telmetry.DELETE_ALL_TESTCASES);
     const probPath = getProbSaveLocation(srcPath);
+    globalThis.logger.log('Deleting problem file', probPath);
     try {
         if (platform() === 'win32') {
-            spawn('del', [probPath]);
+            spawn('cmd.exe', ['/c', 'del', probPath]);
         } else {
             spawn('rm', [probPath]);
         }
     } catch (error) {
-        console.error('Error while deleting problem file ', error);
+        globalThis.logger.error('Error while deleting problem file ', error);
     }
 };
 

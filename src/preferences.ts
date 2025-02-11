@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 const getPreference = (section: prefSection): any => {
     const ret = workspace.getConfiguration('cph').get(section);
 
-    console.log('Read preference for ', section, ret);
+    globalThis.logger.log('Read preference for ', section, ret);
     return ret;
 };
 
@@ -44,11 +44,17 @@ export const getTimeOutPref = (): number =>
 export const getRetainWebviewContextPref = (): boolean =>
     getPreference('general.retainWebviewContext');
 
+export const getCArgsPref = (): string[] =>
+    getPreference('language.c.Args').split(' ') || [];
+
+export const getCOutputArgPref = (): string =>
+    getPreference('language.c.OutputArg');
+
 export const getCppArgsPref = (): string[] =>
     getPreference('language.cpp.Args').split(' ') || [];
 
-export const getCArgsPref = (): string[] =>
-    getPreference('language.c.Args').split(' ') || [];
+export const getCppOutputArgPref = (): string =>
+    getPreference('language.cpp.OutputArg');
 
 export const getPythonArgsPref = (): string[] =>
     getPreference('language.python.Args').split(' ') || [];
@@ -71,8 +77,17 @@ export const getJsArgsPref = (): string[] =>
 export const getGoArgsPref = (): string[] =>
     getPreference('language.go.Args').split(' ') || [];
 
+export const getCSharpArgsPref = (): string[] =>
+    getPreference('language.csharp.Args').split(' ') || [];
+
 export const getFirstTimePref = (): boolean =>
     getPreference('general.firstTime') || 'true';
+
+export const getRemoteServerAddressPref = (): string =>
+    getPreference('general.remoteServerAddress') || '';
+
+export const getLiveUserCountPref = (): boolean =>
+    getPreference('general.showLiveUserCount') || 'true';
 
 export const getDefaultLangPref = (): string | null => {
     const pref = getPreference('general.defaultLanguage');
@@ -111,6 +126,8 @@ export const getGoCommand = (): string =>
     getPreference('language.go.Command') || 'go';
 export const getHaskellCommand = (): string =>
     getPreference('language.haskell.Command') || 'ghc';
+export const getCSharpCommand = (): string =>
+    getPreference('language.csharp.Command') || 'dotnet';
 
 export const getMenuChoices = (): string[] =>
     getPreference('general.menuChoices').split(' ');
@@ -164,6 +181,11 @@ export const getLanguageId = (srcPath: string): number => {
             compiler = getPreference('language.haskell.SubmissionCompiler');
             break;
         }
+
+        case '.cs': {
+            compiler = getPreference('language.csharp.SubmissionCompiler');
+            break;
+        }
     }
     if (compiler == null) return -1;
     for (const [_compiler, id] of Object.entries(config.compilerToId)) {
@@ -171,6 +193,6 @@ export const getLanguageId = (srcPath: string): number => {
             return id;
         }
     }
-    console.error("Couldn't find id for compiler " + compiler);
+    globalThis.logger.error("Couldn't find id for compiler " + compiler);
     return -1;
 };

@@ -11,15 +11,67 @@ import {
     WebViewpersistenceState,
 } from '../../types';
 import CaseView from './CaseView';
-//import JudgeViewProvider from '../JudgeView';
+import Page from './Page';
+
+let storedLogs = '';
+let notificationTimeout: NodeJS.Timeout | undefined = undefined;
+
+const originalConsole = { ...window.console };
+function customLogger(
+    originalMethod: (...args: any[]) => void,
+    ...args: any[]
+) {
+    originalMethod(...args);
+
+    storedLogs += new Date().toISOString() + ' ';
+    storedLogs +=
+        args
+            .map((arg) => (typeof arg === 'object' ? JSON.stringify(arg) : arg))
+            .join(' ') + '\n';
+}
+
 declare const vscodeApi: {
     postMessage: (message: WebviewToVSEvent) => void;
     getState: () => WebViewpersistenceState | undefined;
     setState: (state: WebViewpersistenceState) => void;
 };
 
+interface CustomWindow extends Window {
+    generatedJsonUri: string;
+    remoteMessage: string | null;
+    remoteServerAddress: string;
+    showLiveUserCount: boolean;
+    console: Console;
+}
+declare const window: CustomWindow;
+
+window.console.log = customLogger.bind(window.console, originalConsole.log);
+window.console.error = customLogger.bind(window.console, originalConsole.error);
+window.console.warn = customLogger.bind(window.console, originalConsole.warn);
+window.console.info = customLogger.bind(window.console, originalConsole.info);
+window.console.debug = customLogger.bind(window.console, originalConsole.debug);
+
 // Original: www.paypal.com/ncp/payment/CMLKCFEJEMX5L
 const payPalUrl = 'https://rb.gy/5iiorz';
+
+function getLiveUserCount(): Promise<number> {
+    console.log('Fetching live user count');
+    return fetch(window.remoteServerAddress)
+        .then((res) => res.text())
+        .then((text) => {
+            const userCount = Number(text);
+            if (isNaN(userCount)) {
+                console.error('Invalid live user count', text);
+                return 0;
+            } else {
+                return userCount;
+            }
+        })
+        .catch((err) => {
+            console.error('Failed to fetch live users', err);
+            return 0;
+        });
+}
 
 function Judge(props: {
     problem: Problem;
@@ -46,6 +98,31 @@ function Judge(props: {
     const [onlineJudgeEnv, setOnlineJudgeEnv] = useState<boolean>(false);
     const [inputFileNameState,setInputFileNameState]=useState<string>(problem.input_file_name);
     const [outputFileNameState,setOuputFileNameState]=useState<string>(problem.output_file_name);
+    const [infoPageVisible, setInfoPageVisible] = useState<boolean>(false);
+    const [generatedJson, setGeneratedJson] = useState<any | null>(null);
+    const [liveUserCount, setLiveUserCount] = useState<number>(0);
+    const [extLogs, setExtLogs] = useState<string>('');
+
+    useEffect(() => {
+        const updateLiveUserCount = (): void => {
+            if (window.showLiveUserCount) {
+                getLiveUserCount().then((count) => setLiveUserCount(count));
+            }
+        };
+        updateLiveUserCount();
+        const interval = setInterval(updateLiveUserCount, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        fetch(window.generatedJsonUri)
+            .then((res) => res.json())
+            .then((data) => setGeneratedJson(data))
+            .catch((err) =>
+                console.error('Failed to fetch generated JSON', err),
+            );
+    }, []);
+
     const [webviewState, setWebviewState] = useState<WebViewpersistenceState>(
         () => {
             const vscodeState = vscodeApi.getState();
@@ -119,6 +196,10 @@ function Judge(props: {
                 }
                 case 'waiting-for-submit': {
                     setWaitingForSubmit(true);
+                    break;
+                }
+                case 'ext-logs': {
+                    setExtLogs(data.logs);
                     break;
                 }
                 default: {
@@ -198,6 +279,7 @@ function Judge(props: {
 
     // Stop running executions.
     const stop = () => {
+        notify('Stopped any running processes');
         sendMessageToVSCode({
             command: 'kill-running',
             problem,
@@ -296,9 +378,11 @@ function Judge(props: {
     };
 
     const notify = (text: string) => {
+        clearTimeout(notificationTimeout!);
         setNotification(text);
-        setTimeout(() => {
+        notificationTimeout = setTimeout(() => {
             setNotification(null);
+            notificationTimeout = undefined;
         }, 1000);
     };
 
@@ -407,10 +491,16 @@ function Judge(props: {
         }
     };
 
+    const showInfoPage = () => {
+        sendMessageToVSCode({
+            command: 'get-ext-logs',
+        });
+        setInfoPageVisible(true);
+    };
+
     const renderDonateButton = () => {
         const diff = new Date().getTime() - webviewState.dialogCloseDate;
         const diffInDays = diff / (1000 * 60 * 60 * 24);
-        console.log('Diff in days:', diffInDays);
         if (diffInDays < 14) {
             return null;
         }
@@ -442,10 +532,88 @@ function Judge(props: {
         );
     };
 
+    const renderInfoPage = () => {
+        if (infoPageVisible === false) {
+            return null;
+        }
+
+        if (generatedJson === null) {
+            return (
+                <Page
+                    content="Loading..."
+                    title="About CPH"
+                    closePage={() => setInfoPageVisible(false)}
+                />
+            );
+        }
+        const logs = storedLogs;
+        const contents = (
+            <div>
+                A VS Code extension to make competitive programming easier,
+                created by Divyanshu Agrawal
+                <hr />
+                <h3>🤖 Enable AI compilation</h3>
+                Get 100x faster compilation using AI, please opt-in below. Your
+                data will be used to train cats to write JavaScript.
+                <br />
+                <br />
+                <button
+                    className="btn btn-green"
+                    onClick={(e) => {
+                        const target = e.target as HTMLButtonElement;
+                        target.innerText = '🪄 AI training ...';
+                    }}
+                >
+                    Enable
+                </button>
+                <hr />
+                <h3>Get Help</h3>
+                <a
+                    className="btn"
+                    href="https://github.com/agrawal-d/cph/blob/main/docs/user-guide.md"
+                >
+                    User guide
+                </a>
+                <hr />
+                <h3>Commit</h3>
+                <pre className="selectable">{generatedJson.gitCommitHash}</pre>
+                <hr />
+                <h3>Build Time</h3>
+                {generatedJson.dateTime}
+                <hr />
+                <h3>License</h3>
+                <pre className="selectable">{generatedJson.licenseString}</pre>
+                <hr />
+                {window.showLiveUserCount && (
+                    <>
+                        <h3>Live user count</h3>
+                        {liveUserCount} {liveUserCount === 1 ? 'user' : 'users'}{' '}
+                        online.
+                        <hr />
+                    </>
+                )}
+                <h3>UI Logs</h3>
+                <pre className="selectable">{logs}</pre>
+                <hr />
+                <h3>Extension Logs</h3>
+                <pre className="selectable">{extLogs}</pre>
+            </div>
+        );
+
+        return (
+            <Page
+                content={contents}
+                title="About CPH"
+                closePage={() => setInfoPageVisible(false)}
+            />
+        );
+    };
+
     return (
         <div className="ui">
             {notification && <div className="notification">{notification}</div>}
             {renderDonateButton()}
+            {renderInfoPage()}
             <div className="meta">
                 <h1 className="problem-name">
                     <a href={getHref()}>{problem.name}</a>{' '}
@@ -517,6 +685,13 @@ function Judge(props: {
                         }}
                     />
                 </div>
+                {window.showLiveUserCount && liveUserCount > 0 && (
+                    <div className="liveUserCount">
+                        <i className="codicon codicon-circle-filled color-green"></i>{' '}
+                        {liveUserCount} {liveUserCount === 1 ? 'user' : 'users'}{' '}
+                        online.
+                    </div>
+                )}
             </div>
             <div className="actions">
                 <div className="row">
@@ -554,18 +729,13 @@ function Judge(props: {
                     </button>
                     <button
                         className="btn"
-                        title="Help"
-                        onClick={() =>
-                            sendMessageToVSCode({
-                                command: 'url',
-                                url: 'https://github.com/agrawal-d/cph/blob/main/docs/user-guide.md',
-                            })
-                        }
+                        title="Info"
+                        onClick={() => showInfoPage()}
                     >
                         <span className="icon">
-                            <i className="codicon codicon-question"></i>
+                            <i className="codicon codicon-info"></i>
                         </span>{' '}
-                        <span className="action-text">Help</span>
+                        <span className="action-text"></span>
                     </button>
                     <button
                         className="btn btn-red right"
